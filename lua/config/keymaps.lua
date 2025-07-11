@@ -3,8 +3,10 @@
 -- Add any additional keymaps here
 
 -- for mobile compability
-for _, mode in ipairs({ "n", "v", "s", "o", "i", "c", "t" }) do
-  vim.keymap.set(mode, "`", "<Esc>", { desc = "` as Esc everywhere" })
+local modes = { "n", "i", "v", "t", "x", "s", "c" }
+
+for _, mode in ipairs(modes) do
+  vim.keymap.set(mode, "`", "<Esc>", { noremap = true, silent = true })
 end
 
 -- load CPLayout
