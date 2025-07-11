@@ -3,7 +3,9 @@
 -- Add any additional keymaps here
 
 -- for mobile compability
-vim.keymap.set({ "n", "v", "s", "o", "i", "t", "c" }, "`", "<Esc>")
+for _, mode in ipairs({ "n", "v", "s", "o", "i", "c", "t" }) do
+  vim.keymap.set(mode, "`", "<Esc>", { desc = "` as Esc everywhere" })
+end
 
 -- load CPLayout
 local cp_layout = require("user.cplayout")
