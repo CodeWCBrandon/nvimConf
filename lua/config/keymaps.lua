@@ -9,6 +9,8 @@ for _, mode in ipairs(modes) do
   vim.keymap.set(mode, "`", "<Esc>", { noremap = true, silent = true })
 end
 
+vim.keymap.set("i", "<C-h>", "<C-w>")
+
 -- load CPLayout
 local cp_layout = require("user.cplayout")
 
