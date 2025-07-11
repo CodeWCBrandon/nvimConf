@@ -59,7 +59,7 @@ function M.run_cpp_file()
 
   print("Running: " .. full_cmd) -- 🐛 Debug command
 
-  vim.fn.jobstart({ "sh", "-c", full_cmd }, {
+  vim.fn.jobstart({ "bash", "-c", full_cmd }, {
     stdout_buffered = true,
     stderr_buffered = true,
     on_stdout = function(_, data)
