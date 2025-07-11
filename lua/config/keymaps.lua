@@ -2,6 +2,9 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+-- for mobile compability
+vim.keymap.set({ "n", "v", "s", "o", "i", "t", "c" }, "`", "<Esc>")
+
 -- load CPLayout
 local cp_layout = require("user.cplayout")
 
