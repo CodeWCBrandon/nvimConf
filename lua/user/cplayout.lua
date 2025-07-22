@@ -117,4 +117,25 @@ function M.close_layout()
   vim.cmd("only")
 end
 
+function M.paste_clipboard_to_input()
+  local input_content = vim.fn.getreg("+") -- get system clipboard content
+  local input_lines = vim.split(input_content, "\n", { plain = true })
+
+  -- Find buffer with input.txt
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_name(buf):match("input%.txt$") then
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, input_lines)
+
+      -- Save the buffer to file
+      vim.api.nvim_buf_call(buf, function()
+        vim.cmd("write")
+      end)
+
+      vim.notify("📋 Clipboard content pasted and saved to input.txt", vim.log.levels.INFO)
+      return
+    end
+  end
+
+  vim.notify("❌ input.txt buffer not found", vim.log.levels.ERROR)
+end
 return M

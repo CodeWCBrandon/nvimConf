@@ -3,8 +3,11 @@ return {
   event = "VeryLazy",
   enabled = false,
   config = function()
-    require("presence").setup({
-      -- customize status here
+    local presence = require("presence")
+
+    -- Disable automatic updates to avoid resetting timer
+    presence.setup({
+      auto_update = true,
       neovim_image_text = "Playing Neovim",
       main_image = "neovim",
       enable_line_number = true,

@@ -34,6 +34,11 @@ vim.keymap.set("n", "<leader>cr", function()
   cp_layout.run_cpp_file()
 end, { desc = "Run C++ with input/output" })
 
+-- Copy to input
+vim.keymap.set("n", "<leader>pi", function()
+  cp_layout.paste_clipboard_to_input()
+end, { desc = "Paste to input" })
+
 vim.keymap.set("n", "<leader>ct", function()
   cp_layout.insert_template()
 end, { desc = "Insert C++ template" })
@@ -59,36 +64,34 @@ vim.keymap.set("v", "<M-Down>", ":m '>+1<CR>gv=gv", opts)
 vim.keymap.set("i", "<M-Up>", "<Esc>:m .-2<CR>==", opts)
 vim.keymap.set("i", "<M-Down>", "<Esc>:m .+1<CR>==", opts)
 
--- Change Keywords
-vim.keymap.set("v", "<leader>ck", function()
-  -- Get the range of selected lines
-  local start_line = vim.fn.line("'<")
-  local end_line = vim.fn.line("'>")
+-- Lua function to perform keyword substitution in a line range
+function _G.change_keyword_in_range(start_line, end_line)
+  local from = vim.fn.input("Keyword to change: ")
+  if from == "" then
+    vim.notify("⚠️ No keyword provided, aborting.", vim.log.levels.WARN)
+    return
+  end
 
-  -- Prompt for the keyword to replace
-  vim.ui.input({ prompt = "Keyword to change: " }, function(from_word)
-    if not from_word or from_word == "" then
-      return
-    end
+  local to = vim.fn.input("Replace with: ")
+  if to == "" then
+    vim.notify("⚠️ No replacement provided, aborting.", vim.log.levels.WARN)
+    return
+  end
 
-    -- Prompt for the replacement keyword
-    vim.ui.input({ prompt = "Replace with: " }, function(to_word)
-      if to_word == nil then
-        return
-      end
+  -- Escape special characters
+  local esc_from = vim.fn.escape(from, [[\/]])
+  local esc_to = vim.fn.escape(to, [[\/]])
 
-      -- Escape special characters (optional but recommended)
-      local escaped_from = vim.fn.escape(from_word, "\\/") -- escape / and \
-      local escaped_to = vim.fn.escape(to_word, "\\/")
+  -- Construct and run the substitution command
+  local cmd = string.format("%d,%ds/%s/%s/g", start_line, end_line, esc_from, esc_to)
+  vim.cmd(cmd)
 
-      -- Perform the substitution over the visual range
-      local cmd = string.format(":%d,%ds/\\<%s\\>/%s/g", start_line, end_line, escaped_from, escaped_to)
-      vim.cmd(cmd)
+  vim.notify(
+    ("✅ Replaced '%s' → '%s' in lines %d–%d"):format(from, to, start_line, end_line),
+    vim.log.levels.INFO
+  )
+end
 
-      vim.notify(
-        string.format("✅ Replaced '%s' → '%s' in lines %d–%d", from_word, to_word, start_line, end_line),
-        vim.log.levels.INFO
-      )
-    end)
-  end)
-end, { desc = "Change keyword in visual selection" })
+vim.cmd([[
+  xnoremap <silent> <leader>ck :<C-u>lua change_keyword_in_range(vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2])<CR>
+]])
