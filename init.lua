@@ -5,6 +5,7 @@ require("config.lazy")
 vim.opt.shell = "/bin/bash"
 vim.opt.shellcmdflag = "-ic" -- interactive shell, loads ~/.bashrc
 
+
 require("lspconfig").clangd.setup({
   cmd = { "clangd", "--header-insertion=never" }, -- disable header insertion
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
@@ -36,15 +37,23 @@ require("lspconfig").clangd.setup({
     keys.on_attach(client, bufnr) -- comment this out if LazyVim sets default keys
 
     -- OR: manually override keys if needed
-    vim.keymap.del("n", "<leader>cr", { buffer = bufnr }) -- example: remove code action
+    vim.keymap.del("n", "<leader>cr") -- example: remove code action
+
   end,
 })
+
+
 
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client and client.name == "clangd" and vim.lsp.inlay_hint then
-      vim.lsp.inlay_hint.enable(false, { bufnr = args.buf })
+    
+    if client and client.name == "clangd" then
+      if vim.lsp.inlay_hint then
+        vim.lsp.inlay_hint.enable(false, { bufnr = args.buf })
+      end
+
+      pcall(vim.keymap.del, "n", "<leader>cr", { buffer = args.buf })
     end
   end,
 })
